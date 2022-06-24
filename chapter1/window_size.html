@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .box {
+        font-size: x-large;
+        display: inline-block;
+        background-color: thistle;
+        padding: 16px;
+        margin-top: 16px;
+        font-size: 48px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="box">
+      <div class="screen">window.screen:</div>
+      <div class="outer">window.outer:</div>
+      <div class="inner">window.inner:</div>
+      <div class="clientWidth">documentElement.clientWidth:</div>
+    </div>
+    <script type="text/javascript">
+      const screen = document.querySelector('.screen');
+      const outer = document.querySelector('.outer');
+      const inner = document.querySelector('.inner');
+      const clientWidth = document.querySelector('.clientWidth');
+      function update() {
+        screen.innerHTML = `window.screen: ${window.screen.availWidth}, ${window.screen.availHeight}`;
+        outer.innerHTML = `window.outer: ${window.outerWidth}, ${window.outerHeight}`;
+        inner.innerHTML = `window.inner: ${window.innerWidth}, ${window.innerHeight}`;
+        clientWidth.innerHTML = `documentElement.clientWidth: ${document.documentElement.clientWidth}, ${document.documentElement.clientHeight}`;
+      }
+      update();
+      window.addEventListener('resize', () => {
+        update();
+      });
+    </script>
+  </body>
+</html>
