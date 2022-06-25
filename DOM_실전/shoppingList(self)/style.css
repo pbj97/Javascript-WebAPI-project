@@ -1,0 +1,51 @@
+html {
+  background-color: rgb(194, 196, 212);
+}
+body {
+  background-image: url(./imgs/background.png);
+  margin: auto;
+  width: 40%;
+}
+
+nav {
+  background-image: inherit;
+  font-size: x-large;
+  text-align: center;
+  color: white;
+  line-height: 50px;
+}
+
+.shoppingList {
+  font-size: 24px;
+  display: flex;
+  flex-direction: column;
+  height: 600px;
+  background-color: rgb(238, 237, 237);
+}
+
+.shoppingList div {
+  position: relative;
+  background-color: white;
+}
+
+.shoppingList div i {
+  position: absolute;
+  right: 5px;
+}
+
+.goodsName {
+  background-color: white;
+  margin-top: auto;
+  border: none;
+  line-height: 32px;
+}
+
+footer {
+  background-image: inherit;
+  text-align: center;
+}
+i.fa-solid.fa-circle-plus {
+  background-image: inherit;
+  margin: auto;
+  font-size: 68px;
+}
