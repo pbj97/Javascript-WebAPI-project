@@ -1,26 +1,104 @@
 'use strict';
-export default class Game {
-  constructor(carrotCount, gameDurationSec) {
+import { Field, ItemType } from './field.js';
+import * as sound from './sound.js';
+
+export const Reason = Object.freeze({
+  win: 'win',
+  lose: 'lose',
+  cancel: 'cancel',
+});
+
+export class GameBuilder {
+  carrotCount(carrotCount) {
     this.carrotCount = carrotCount;
+    return this;
+  }
+
+  bugCount(bugCount) {
+    this.bugCount = bugCount;
+    return this;
+  }
+
+  gameDuration(duration) {
+    this.gameDuration = duration;
+    return this;
+  }
+
+  carrotSize(carrotSize) {
+    this.carrotSize = carrotSize;
+    return this;
+  }
+
+  build() {
+    return new Game(
+      this.carrotCount,
+      this.bugCount,
+      this.gameDuration,
+      this.carrotSize
+    );
+  }
+}
+
+class Game {
+  constructor(carrotCount, bugCount, gameDurationSec, carrotSize) {
+    this.carrotCount = carrotCount;
+    this.bugCount = bugCount;
     this.gameDurationSec = gameDurationSec;
+
     this.started = false;
     this.score = 0;
     this.timer = undefined;
+
     this.gameBtn = document.querySelector('.game__button');
+    this.gameBtn.addEventListener('click', () => {
+      if (this.started) {
+        this.stop(Reason.cancel);
+      } else {
+        this.start();
+      }
+    });
     this.gameTimer = document.querySelector('.game__timer');
     this.gameScore = document.querySelector('.game__score');
-    this.gameBtn.addEventListener('click', () => {
-      this.onClick && this.onClick();
-    });
+
+    this.gameField = new Field(carrotCount, bugCount, carrotSize);
+    this.gameField.setClickListener(this.onItemClick);
   }
 
-  setClickListener(onClick) {
-    this.onClick = onClick;
+  setGameStopListener(onGameStop) {
+    this.onGameStop = onGameStop;
   }
 
-  finishGame(f) {
-    this.finishGame = f;
+  start() {
+    this.started = true;
+    this.init();
+    this.showStopButton();
+    this.showTimerAndScore();
+    this.startGameTimer();
+    sound.playBackground();
   }
+
+  stop(reason) {
+    this.started = false;
+    this.stopGameTimer();
+    this.hideGameButton();
+    sound.stopBackground();
+    this.onGameStop && this.onGameStop(reason);
+  }
+
+  onItemClick = (item) => {
+    if (!this.started) {
+      return;
+    }
+    if (item === ItemType.carrot) {
+      this.score++;
+      this.updateScoreBoard();
+      if (this.score === this.carrotCount) {
+        this.stop(Reason.win);
+      }
+    } else if (item === ItemType.bug) {
+      this.stop(Reason.lose);
+    }
+  };
 
   showStopButton() {
     const icon = this.gameBtn.querySelector('.fa-solid');
@@ -44,7 +122,7 @@ export default class Game {
     this.timer = setInterval(() => {
       if (remainingTimeSec <= 0) {
         clearInterval(this.timer);
-        this.finishGame && this.finishGame(this.carrotCount === this.score);
+        this.stop(this.score === this.carrotCount ? Reason.win : Reason.lose);
         return;
       }
       this.updateTimerText(--remainingTimeSec);
@@ -63,8 +141,10 @@ export default class Game {
   updateScoreBoard() {
     this.gameScore.innerText = this.carrotCount - this.score;
   }
+
   init() {
     this.score = 0;
     this.gameScore.innerHTML = this.carrotCount;
+    this.gameField.init();
   }
 }
